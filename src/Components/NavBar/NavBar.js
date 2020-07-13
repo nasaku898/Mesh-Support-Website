@@ -4,11 +4,12 @@ import { Home } from '@material-ui/icons'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import useStyles from './NavBarStyle'
 import { Link as RouterLink } from "react-router-dom";
-
 const NavBar = () => {
+
     const classes = useStyles()
+
     return (
-        <div>
+        <div >
             <AppBar position="static">
                 <Toolbar >
                     <Link component={RouterLink} to="/" color="inherit">
@@ -39,7 +40,7 @@ const NavBar = () => {
                             Upload
                         </Button>
                     </Link>
-                    
+
                 </Toolbar>
             </AppBar>
         </div>
