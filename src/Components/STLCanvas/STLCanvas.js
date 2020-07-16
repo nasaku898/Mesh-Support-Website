@@ -164,8 +164,11 @@ const STLCanvas = () => {
 
                     mesh.geometry.computeBoundingBox()
                     mesh.geometry.center()
-
-                    camera.current.position.z = mesh.geometry.boundingBox.max.z * 2
+                    mesh.geometry.computeBoundingSphere()
+                    console.log(mesh.geometry)
+                    console.log(mesh)
+                    console.log(mesh.geometry.boundingSphere)
+                    camera.current.position.z = mesh.geometry.boundingSphere.radius
                     defaultCameraPosition.current.set(defaultCameraPosition.current.x, defaultCameraPosition.current.y, camera.current.position.z)
                     mesh.position.y += -mesh.geometry.boundingBox.min.z * 0.5
                     mesh.name = sceneNames.stlModel
@@ -251,9 +254,6 @@ const STLCanvas = () => {
         camera.current.position.y = defaultCameraPosition.current.z
     }
 
-    const logCamera = () => {
-        console.log(camera.current)
-    }
     const removeModel = () => {
         const mesh = scene.current.getObjectByName(sceneNames.stlModel)
         scene.current.remove(mesh)
@@ -276,7 +276,6 @@ const STLCanvas = () => {
         setShowProgress(true)
         setTimeout(test, 10000)
     }
-
 
     return (
         <>
@@ -328,19 +327,22 @@ const STLCanvas = () => {
                             <Grid item xs={12} md={8} >
                                 <div className={classes.menuItem}>
                                     <Typography>Orientation</Typography>
-                                    <ButtonGroup color="primary" aria-label="outlined primary button group" className={classes.ButtonGroup}>
-                                        <Button onClick={leftSideView}>Left</Button>
-                                        <Button onClick={rightSideView}>Right</Button>
-                                        <Button onClick={topView}>Top</Button>
-                                        <Button onClick={frontView}>Front</Button>
-                                        <Button onClick={threeDView}>3D</Button>
-                                    </ButtonGroup>
+                                    <div className={classes.buttonGroupWrapper}>
+                                        <ButtonGroup color="primary" aria-label="outlined primary button group" className={classes.ButtonGroup}>
+                                            <Button onClick={leftSideView}>Left</Button>
+                                            <Button onClick={rightSideView}>Right</Button>
+                                            <Button onClick={topView}>Top</Button>
+                                            <Button onClick={frontView}>Front</Button>
+                                            <Button onClick={threeDView}>3D</Button>
+                                        </ButtonGroup>
+                                    </div>
+
 
                                 </div>
                             </Grid>
                             <Grid item xs={12} md={2}>
                                 <div className={classes.menuItem}>
-                                    <Typography className={classes.test}>Wireframe</Typography>
+                                    <Typography className={classes.wireframe}>Wireframe</Typography>
                                     <Switch
                                         checked={enableWireFrame}
                                         onChange={toggleWireFrame}
@@ -374,9 +376,6 @@ const STLCanvas = () => {
                             </Grid>
 
                         </Grid>
-
-                        <button onClick={logCamera}>cam</button>
-                        <button onClick={threeDView}>3D</button>
                     </>
                 }
             </div>

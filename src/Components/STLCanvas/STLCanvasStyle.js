@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
         width: "100%"
     },
 
-    test: {
+    wireframe: {
         overflow: "hidden"
     },
 
@@ -62,12 +62,16 @@ const useStyles = makeStyles((theme) => ({
         marginTop: "10px"
     },
 
-    ButtonGroup: {
-        width: "100%",
-        marginLeft: "auto",
-        marginRight: "auto"
-    }
-
+    buttonGroupWrapper: {
+        root: {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            '& > *': {
+                margin: theme.spacing(1),
+            },
+        },
+    },
 }))
 
 export default useStyles
