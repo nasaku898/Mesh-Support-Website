@@ -1,7 +1,7 @@
 const { makeStyles } = require("@material-ui/core");
 
 const useStyles = makeStyles((theme) => ({
-    BottomNavigationStyle: {
+    bottomNavigationStyle: {
         position: "absolute",
         left: 0,
         bottom: 0,
