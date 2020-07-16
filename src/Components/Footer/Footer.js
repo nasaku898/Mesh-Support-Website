@@ -1,16 +1,14 @@
 import React from 'react'
-import { Typography, BottomNavigation } from '@material-ui/core'
+import { Typography } from '@material-ui/core'
 import useStyles from './FooterStyle'
 
 const Footer = () => {
     const classes = useStyles()
     return (
-        <div>
-            <BottomNavigation className={classes.BottomNavigationStyle}>
-                <Typography className={classes.credit}>
-                    &copy;{new Date().getFullYear} DAMLab | All rights reserved.
-                </Typography>
-            </BottomNavigation>
+        <div className={classes.bottomNavigationStyle}>
+            <Typography className={classes.credit}>
+                &copy; DAMLab | All rights reserved.
+            </Typography>
         </div>
     )
 }

@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme) => ({
         margin: "auto",
         marginTop: "50px"
     },
-    
+
     stlCanvasWrapper: {
         width: "50%",
         height: "100%",
@@ -37,24 +37,35 @@ const useStyles = makeStyles((theme) => ({
         border: `solid 1px ${theme.palette.primary.main}`,
         width: "100%",
         padding: "10px",
-        margin: "auto"
+        margin: "auto",
+        height: "100%"
     },
 
     errorMessage: {
         margin: "20px"
     },
-    
+
     gridContainer: {
         height: "100%",
         paddingBottom: "100px"
     },
-    
+
     removeBtn: {
         width: "100%"
     },
-    
+
     test: {
         overflow: "hidden"
+    },
+
+    progressBar: {
+        marginTop: "10px"
+    },
+
+    ButtonGroup: {
+        width: "100%",
+        marginLeft: "auto",
+        marginRight: "auto"
     }
 
 }))
