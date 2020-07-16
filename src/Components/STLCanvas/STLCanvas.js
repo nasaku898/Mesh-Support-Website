@@ -4,7 +4,7 @@ import * as THREE from 'three'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
 import "./style.css"
-import { Switch, Typography, Button, ButtonGroup, Box, Input, Grid } from '@material-ui/core'
+import { Switch, Typography, Button, ButtonGroup, Box, Input, Grid, LinearProgress } from '@material-ui/core'
 import ErrorAlert from '../ErrorAlert/ErrorAlert'
 import useStyles from './STLCanvasStyle'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
@@ -14,8 +14,8 @@ const STLCanvas = () => {
     const scene = useRef(null)
     const camera = useRef()
     const handleSize = useRef(null)
-    const defaultCameraPosition = new THREE.Vector3(0, 0, 40)
-
+    const defaultCameraPosition = useRef(new THREE.Vector3(0, 0, 100))
+    const planeSize = 60
 
     //States
     const [enableWireFrame, setEnableWireFrame] = useState(false)
@@ -24,6 +24,8 @@ const STLCanvas = () => {
     const [uploadSuccess, setUploadSuccess] = useState(true)
     const [errorMessage, setErrorMessage] = useState(null)
     const [fileName, setfileName] = useState(null)
+    const [showProgress, setShowProgress] = useState(false)
+
     const sceneNames = {
         mainPlane: "mainPlane",
         gridFloor: "gridFloor",
@@ -49,22 +51,25 @@ const STLCanvas = () => {
             camera.current = new THREE.PerspectiveCamera(85, width / height, 0.1, 1000)
             renderer = new THREE.WebGLRenderer({ antialias: true })
             control = new OrbitControls(camera.current, renderer.domElement)
-            control.addEventListener('change', updateLight)
+
             renderer.setSize(width, height)
             renderer.shadowMap.enabled = true
+
             scene.current.background = new THREE.Color(0x72645b)
+
             camera.current.lookAt(scene.current.position)
-            camera.current.position.set(defaultCameraPosition.x, defaultCameraPosition.y, defaultCameraPosition.z)
+            camera.current.position.set(defaultCameraPosition.current.x, defaultCameraPosition.current.y, defaultCameraPosition.current.z)
 
             createPlane()
-
             mount.current.appendChild(renderer.domElement)
+
+            control.addEventListener('change', updateLight)
             window.addEventListener('resize', handleResize, false)
         }
 
         const createPlane = () => {
             var plane = new THREE.Mesh(
-                new THREE.PlaneBufferGeometry(40, 40),
+                new THREE.PlaneBufferGeometry(planeSize, planeSize),
                 new THREE.MeshPhongMaterial({ color: 0x999999, specular: 0x101010 })
             )
             plane.name = sceneNames.mainPlane
@@ -74,15 +79,14 @@ const STLCanvas = () => {
         }
 
         const createGridFloor = () => {
-            const size = 40
-            const divisions = 80
+            const size = planeSize
+            const divisions = planeSize
             const gridHelper = new THREE.GridHelper(size, divisions)
-            gridHelper.name = "main-grid"
+            gridHelper.name = sceneNames.gridFloor
             scene.current.add(gridHelper)
         }
 
         const addLight = () => {
-
             const light = new THREE.DirectionalLight(0xffffff, 1)
             light.position.set(1, 1, 1).normalize()
 
@@ -97,7 +101,9 @@ const STLCanvas = () => {
             camera.current.aspect = width / height
             camera.current.updateProjectionMatrix()
         }
+        //Bind the function to the global one
         handleSize.current = handleResize
+
         const updateLight = () => {
             const light = scene.current.getObjectByName(sceneNames.mainLight)
             light.position.copy(camera.current.position)
@@ -113,17 +119,16 @@ const STLCanvas = () => {
             renderer.render(scene.current, camera.current)
         }
 
-
         init()
         addLight()
         createGridFloor()
         animate()
         setCanvasLoaded(true)
 
-
     }, [defaultCameraPosition, sceneNames, canvasLoaded])
-    useEffect(() => {
 
+    //Remove event listener when component unmount
+    useEffect(() => {
         return () => {
             window.removeEventListener('resize', handleSize.current, false)
         }
@@ -135,17 +140,16 @@ const STLCanvas = () => {
             const file = event.target.file.files[0]
 
             if (file === undefined) {
-
                 throw new Error("No file found")
             }
 
-            if (file.name.split('.').pop() !== "stl") {
+            if (file.name.split('.').pop().toUpperCase() !== "STL") {
                 throw new Error("File type is not supported")
             }
 
-            console.log(event.target.file.files[0])
             const loader = new STLLoader()
-            let reader = new FileReader()
+            const reader = new FileReader()
+
             reader.readAsDataURL(event.target.file.files[0])
             reader.onload = (event) => {
                 loader.load(event.target.result, geometry => {
@@ -157,16 +161,16 @@ const STLCanvas = () => {
                     mesh.scale.set(0.5, 0.5, 0.5)
                     mesh.receiveShadow = true
                     mesh.castShadow = true
-                    //mesh.rotateZ(Math.PI / 2)
 
                     mesh.geometry.computeBoundingBox()
                     mesh.geometry.center()
 
-                    // Adjusting model such that it is on the plane
-                    mesh.position.y += -mesh.geometry.boundingBox.min.z / 2
+                    camera.current.position.z = mesh.geometry.boundingBox.max.z * 2
+                    defaultCameraPosition.current.set(defaultCameraPosition.current.x, defaultCameraPosition.current.y, camera.current.position.z)
+                    mesh.position.y += -mesh.geometry.boundingBox.min.z * 0.5
                     mesh.name = sceneNames.stlModel
                     scene.current.add(mesh)
-
+                    threeDView()
                     const canvas = document.getElementById('stlCanvas')
 
                     canvas.style.visibility = 'visible'
@@ -178,7 +182,6 @@ const STLCanvas = () => {
             setErrorMessage(error.message)
             setUploadSuccess(false)
         }
-
     }
 
     const toggleWireFrame = () => {
@@ -195,6 +198,7 @@ const STLCanvas = () => {
                 wireframe.rotation.x = - Math.PI / 2
                 wireframe.scale.set(0.5, 0.5, 0.5)
                 wireframe.position.y += -mesh.geometry.boundingBox.min.z / 2
+
                 scene.current.add(wireframe)
 
                 setEnableWireFrame(true)
@@ -208,7 +212,7 @@ const STLCanvas = () => {
     }
 
     const resetView = () => {
-        camera.current.position.set(defaultCameraPosition.x, defaultCameraPosition.y, defaultCameraPosition.z)
+        camera.current.position.set(defaultCameraPosition.current.x, defaultCameraPosition.current.y, defaultCameraPosition.current.z)
     }
 
     const resetModelPosition = () => {
@@ -218,19 +222,18 @@ const STLCanvas = () => {
 
     const leftSideView = () => {
         resetView()
-        camera.current.position.x = Math.sin(-Math.PI / 2) * defaultCameraPosition.z
-        camera.current.position.z = Math.cos(-Math.PI / 2) * defaultCameraPosition.z
+        camera.current.position.x = Math.sin(-Math.PI / 2) * defaultCameraPosition.current.z
+        camera.current.position.z = Math.cos(-Math.PI / 2) * defaultCameraPosition.current.z
     }
 
     const rightSideView = () => {
         resetView()
-        camera.current.position.x = Math.sin(Math.PI / 2) * defaultCameraPosition.z
-        camera.current.position.z = Math.cos(Math.PI / 2) * defaultCameraPosition.z
-
+        camera.current.position.x = Math.sin(Math.PI / 2) * defaultCameraPosition.current.z
+        camera.current.position.z = Math.cos(Math.PI / 2) * defaultCameraPosition.current.z
     }
     const topView = () => {
         resetView()
-        camera.current.position.y = 50
+        camera.current.position.y = defaultCameraPosition.current.z
         camera.current.position.z = 0
     }
 
@@ -239,17 +242,41 @@ const STLCanvas = () => {
         resetModelPosition()
     }
 
+    const threeDView = () => {
+        resetView()
+        resetModelPosition()
+
+        camera.current.position.x = Math.sin(-Math.PI / 4) * defaultCameraPosition.current.z
+        camera.current.position.z = Math.cos(-Math.PI / 4) * defaultCameraPosition.current.z
+        camera.current.position.y = defaultCameraPosition.current.z
+    }
+
+    const logCamera = () => {
+        console.log(camera.current)
+    }
     const removeModel = () => {
         const mesh = scene.current.getObjectByName(sceneNames.stlModel)
         scene.current.remove(mesh)
         setModelLoaded(false)
         setfileName(null)
+        resetView()
         const canvas = document.getElementById('stlCanvas')
         canvas.style.visibility = 'hidden'
     }
+
     const getFileName = () => {
         setfileName(document.getElementById('file').value.split(/(\\|\/)/g).pop())
     }
+
+    const generateSupport = () => {
+        // make api call here:
+        const test = () => {
+            setShowProgress(false)
+        }
+        setShowProgress(true)
+        setTimeout(test, 10000)
+    }
+
 
     return (
         <>
@@ -301,11 +328,12 @@ const STLCanvas = () => {
                             <Grid item xs={12} md={8} >
                                 <div className={classes.menuItem}>
                                     <Typography>Orientation</Typography>
-                                    <ButtonGroup color="primary" aria-label="outlined primary button group">
+                                    <ButtonGroup color="primary" aria-label="outlined primary button group" className={classes.ButtonGroup}>
                                         <Button onClick={leftSideView}>Left</Button>
                                         <Button onClick={rightSideView}>Right</Button>
                                         <Button onClick={topView}>Top</Button>
                                         <Button onClick={frontView}>Front</Button>
+                                        <Button onClick={threeDView}>3D</Button>
                                     </ButtonGroup>
 
                                 </div>
@@ -330,10 +358,27 @@ const STLCanvas = () => {
                                     Remove Model
                                     </Button>
                             </Grid>
+                            <Grid item xs={12} className={classes.progressBar} >
+                                <Button
+                                    onClick={generateSupport}
+                                    variant="contained"
+                                    color="primary"
+                                    className={classes.removeBtn} >
+                                    Generate Support
+                                    </Button>
+                                {
+                                    (showProgress) &&
+                                    <LinearProgress color="secondary" className={classes.progressBar}></LinearProgress>
+                                }
+
+                            </Grid>
+
                         </Grid>
+
+                        <button onClick={logCamera}>cam</button>
+                        <button onClick={threeDView}>3D</button>
                     </>
                 }
-
             </div>
         </>
     )
