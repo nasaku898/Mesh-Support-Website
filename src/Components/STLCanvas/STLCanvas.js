@@ -1,30 +1,32 @@
 
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect, useState, useContext } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
-import "./style.css"
-import { Switch, Typography, Button, ButtonGroup, Box, Input, Grid, LinearProgress } from '@material-ui/core'
+
+import { Typography, Button, Box, Input, Grid } from '@material-ui/core'
 import ErrorAlert from '../ErrorAlert/ErrorAlert'
 import useStyles from './STLCanvasStyle'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-
+import { CanvasContext } from '../../Utils/Context/CanvasContext'
+import OrientationButton from '../OrientationButton/OrientationButton'
+import WireframeSwitch from '../WireframeSwitch/WireframeSwitch'
+import GenerateSupporButton from '../GenerateSupportButton/GenerateSupportButton'
 const STLCanvas = () => {
+
+    const { scene, camera, defaultCameraPosition } = useContext(CanvasContext)
+
     const mount = useRef(null)
-    const scene = useRef(null)
-    const camera = useRef()
+
     const handleSize = useRef(null)
-    const defaultCameraPosition = useRef(new THREE.Vector3(0, 0, 100))
     const planeSize = 60
 
     //States
-    const [enableWireFrame, setEnableWireFrame] = useState(false)
     const [canvasLoaded, setCanvasLoaded] = useState(false)
     const [modelLoaded, setModelLoaded] = useState(false)
     const [uploadSuccess, setUploadSuccess] = useState(true)
     const [errorMessage, setErrorMessage] = useState(null)
     const [fileName, setfileName] = useState(null)
-    const [showProgress, setShowProgress] = useState(false)
 
     const sceneNames = {
         mainPlane: "mainPlane",
@@ -125,7 +127,7 @@ const STLCanvas = () => {
         animate()
         setCanvasLoaded(true)
 
-    }, [defaultCameraPosition, sceneNames, canvasLoaded])
+    }, [defaultCameraPosition, sceneNames, canvasLoaded, camera, scene])
 
     //Remove event listener when component unmount
     useEffect(() => {
@@ -165,15 +167,17 @@ const STLCanvas = () => {
                     mesh.geometry.computeBoundingBox()
                     mesh.geometry.center()
                     mesh.geometry.computeBoundingSphere()
-                    console.log(mesh.geometry)
-                    console.log(mesh)
-                    console.log(mesh.geometry.boundingSphere)
+
                     camera.current.position.z = mesh.geometry.boundingSphere.radius
                     defaultCameraPosition.current.set(defaultCameraPosition.current.x, defaultCameraPosition.current.y, camera.current.position.z)
                     mesh.position.y += -mesh.geometry.boundingBox.min.z * 0.5
                     mesh.name = sceneNames.stlModel
                     scene.current.add(mesh)
-                    threeDView()
+                    //threeDView()
+
+                    camera.current.position.x = Math.sin(-Math.PI / 4) * defaultCameraPosition.current.z
+                    camera.current.position.z = Math.cos(-Math.PI / 4) * defaultCameraPosition.current.z
+                    camera.current.position.y = defaultCameraPosition.current.z
                     const canvas = document.getElementById('stlCanvas')
 
                     canvas.style.visibility = 'visible'
@@ -187,94 +191,18 @@ const STLCanvas = () => {
         }
     }
 
-    const toggleWireFrame = () => {
-        if (!enableWireFrame) {
-            const enableWireFrame = () => {
-                const mesh = scene.current.getObjectByName(sceneNames.stlModel)
-
-                const geo = new THREE.WireframeGeometry(mesh.geometry)
-
-                const mat = new THREE.MeshPhongMaterial({ color: 0xff00ff })
-
-                const wireframe = new THREE.LineSegments(geo, mat)
-                wireframe.name = sceneNames.wireFrame
-                wireframe.rotation.x = - Math.PI / 2
-                wireframe.scale.set(0.5, 0.5, 0.5)
-                wireframe.position.y += -mesh.geometry.boundingBox.min.z / 2
-
-                scene.current.add(wireframe)
-
-                setEnableWireFrame(true)
-            }
-            enableWireFrame()
-        } else {
-            const wireframe = scene.current.getObjectByName(sceneNames.wireFrame)
-            scene.current.remove(wireframe)
-            setEnableWireFrame(false)
-        }
-    }
-
-    const resetView = () => {
-        camera.current.position.set(defaultCameraPosition.current.x, defaultCameraPosition.current.y, defaultCameraPosition.current.z)
-    }
-
-    const resetModelPosition = () => {
-        const mesh = scene.current.getObjectByName(sceneNames.stlModel)
-        mesh.rotation.z = 0
-    }
-
-    const leftSideView = () => {
-        resetView()
-        camera.current.position.x = Math.sin(-Math.PI / 2) * defaultCameraPosition.current.z
-        camera.current.position.z = Math.cos(-Math.PI / 2) * defaultCameraPosition.current.z
-    }
-
-    const rightSideView = () => {
-        resetView()
-        camera.current.position.x = Math.sin(Math.PI / 2) * defaultCameraPosition.current.z
-        camera.current.position.z = Math.cos(Math.PI / 2) * defaultCameraPosition.current.z
-    }
-    const topView = () => {
-        resetView()
-        camera.current.position.y = defaultCameraPosition.current.z
-        camera.current.position.z = 0
-    }
-
-    const frontView = () => {
-        resetView()
-        resetModelPosition()
-    }
-
-    const threeDView = () => {
-        resetView()
-        resetModelPosition()
-
-        camera.current.position.x = Math.sin(-Math.PI / 4) * defaultCameraPosition.current.z
-        camera.current.position.z = Math.cos(-Math.PI / 4) * defaultCameraPosition.current.z
-        camera.current.position.y = defaultCameraPosition.current.z
-    }
-
     const removeModel = () => {
         const mesh = scene.current.getObjectByName(sceneNames.stlModel)
         scene.current.remove(mesh)
+
         setModelLoaded(false)
         setfileName(null)
-        resetView()
         const canvas = document.getElementById('stlCanvas')
         canvas.style.visibility = 'hidden'
     }
 
     const getFileName = () => {
         setfileName(document.getElementById('file').value.split(/(\\|\/)/g).pop())
-    }
-
-    const generateSupport = () => {
-        // make api call here:
-        const test = () => {
-            setShowProgress(false)
-        }
-        setShowProgress(true)
-        setTimeout(test, 10000)
     }
 
     return (
@@ -326,29 +254,13 @@ const STLCanvas = () => {
                         <Grid container spacing={0} className={classes.gridContainer}>
                             <Grid item xs={12} md={8} >
                                 <div className={classes.menuItem}>
-                                    <Typography>Orientation</Typography>
-                                    <div className={classes.buttonGroupWrapper}>
-                                        <ButtonGroup color="primary" aria-label="outlined primary button group" className={classes.ButtonGroup}>
-                                            <Button onClick={leftSideView}>Left</Button>
-                                            <Button onClick={rightSideView}>Right</Button>
-                                            <Button onClick={topView}>Top</Button>
-                                            <Button onClick={frontView}>Front</Button>
-                                            <Button onClick={threeDView}>3D</Button>
-                                        </ButtonGroup>
-                                    </div>
-
-
+                                    <OrientationButton></OrientationButton>
                                 </div>
+
                             </Grid>
                             <Grid item xs={12} md={2}>
                                 <div className={classes.menuItem}>
-                                    <Typography className={classes.wireframe}>Wireframe</Typography>
-                                    <Switch
-                                        checked={enableWireFrame}
-                                        onChange={toggleWireFrame}
-                                        name="checkedA"
-                                        inputProps={{ 'aria-label': 'secondary checkbox' }}
-                                    />
+                                    <WireframeSwitch></WireframeSwitch>
                                 </div>
                             </Grid>
                             <Grid item xs={12} md={2} className={classes.menuItem}>
@@ -360,21 +272,9 @@ const STLCanvas = () => {
                                     Remove Model
                                     </Button>
                             </Grid>
-                            <Grid item xs={12} className={classes.progressBar} >
-                                <Button
-                                    onClick={generateSupport}
-                                    variant="contained"
-                                    color="primary"
-                                    className={classes.removeBtn} >
-                                    Generate Support
-                                    </Button>
-                                {
-                                    (showProgress) &&
-                                    <LinearProgress color="secondary" className={classes.progressBar}></LinearProgress>
-                                }
-
+                            <Grid item xs={12} >
+                                <GenerateSupporButton></GenerateSupporButton>
                             </Grid>
-
                         </Grid>
                     </>
                 }

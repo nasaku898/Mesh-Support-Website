@@ -30,7 +30,7 @@ const NavBar = () => {
                         </Typography>
                     </div>
 
-                    <Link className={classes.link} component={RouterLink} to="/test" color="inherit">
+                    <Link className={classes.link} component={RouterLink} to="/supportGeneration" color="inherit">
                         <Button
                             variant="contained"
                             color="default"
