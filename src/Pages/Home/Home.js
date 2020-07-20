@@ -27,7 +27,7 @@ const Home = () => {
                             Generate a grid support structure for your STL model
                         </Typography>
 
-                        <Link className={classes.link} component={RouterLink} to="/test" color="inherit">
+                        <Link className={classes.link} component={RouterLink} to="/supportGeneration" color="inherit">
                             <br />
                             <Button
                                 variant="contained"

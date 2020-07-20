@@ -48,30 +48,7 @@ const useStyles = makeStyles((theme) => ({
     gridContainer: {
         height: "100%",
         paddingBottom: "100px"
-    },
-
-    removeBtn: {
-        width: "100%"
-    },
-
-    wireframe: {
-        overflow: "hidden"
-    },
-
-    progressBar: {
-        marginTop: "10px"
-    },
-
-    buttonGroupWrapper: {
-        root: {
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            '& > *': {
-                margin: theme.spacing(1),
-            },
-        },
-    },
+    }
 }))
 
 export default useStyles
