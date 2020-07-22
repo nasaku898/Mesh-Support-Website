@@ -39,7 +39,6 @@ const STLCanvas = () => {
 
         let width = mount.current.clientWidth
         let height = mount.current.clientHeight
-        console.log(width, height)
         const init = () => {
             scene.current = new THREE.Scene()
             camera.current = new THREE.PerspectiveCamera(85, width / height, 0.1, 1000)
