@@ -2,7 +2,6 @@
 import React, { useRef, useEffect, useState, useContext } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
-import { DragControls } from 'three/examples/jsm/controls/DragControls'
 import { Button, Grid } from '@material-ui/core'
 import useStyles from './STLCanvasStyle'
 import { CanvasContext } from '../../Utils/Context/CanvasContext'
@@ -12,7 +11,7 @@ import GenerateSupporButton from '../GenerateSupportButton/GenerateSupportButton
 import UploadSTL from '../UploadSTL/UploadSTL'
 const STLCanvas = () => {
 
-    const { scene, camera, defaultCameraPosition } = useContext(CanvasContext)
+    const { scene, camera, renderer, defaultCameraPosition , orbitControls} = useContext(CanvasContext)
 
     const mount = useRef(null)
 
@@ -40,15 +39,14 @@ const STLCanvas = () => {
 
         let width = mount.current.clientWidth
         let height = mount.current.clientHeight
-        let renderer, control
-
+        console.log(width, height)
         const init = () => {
             scene.current = new THREE.Scene()
             camera.current = new THREE.PerspectiveCamera(85, width / height, 0.1, 1000)
-            renderer = new THREE.WebGLRenderer({ antialias: true })
-            control = new OrbitControls(camera.current, renderer.domElement)
-            renderer.setSize(width, height)
-            renderer.shadowMap.enabled = true
+            renderer.current = new THREE.WebGLRenderer({ antialias: true })
+            orbitControls.current = new OrbitControls(camera.current, renderer.current.domElement)
+            renderer.current.setSize(width, height)
+            renderer.current.shadowMap.enabled = true
 
             scene.current.background = new THREE.Color(0x72645b)
 
@@ -56,9 +54,9 @@ const STLCanvas = () => {
             camera.current.position.set(defaultCameraPosition.current.x, defaultCameraPosition.current.y, defaultCameraPosition.current.z)
 
             createPlane()
-            mount.current.appendChild(renderer.domElement)
+            mount.current.appendChild(renderer.current.domElement)
 
-            control.addEventListener('change', updateLight)
+            orbitControls.current.addEventListener('change', updateLight)
             window.addEventListener('resize', handleResize, false)
         }
 
@@ -92,7 +90,7 @@ const STLCanvas = () => {
         const handleResize = () => {
             width = mount.current.clientWidth
             height = mount.current.clientHeight
-            renderer.setSize(width, height)
+            renderer.current.setSize(width, height)
             camera.current.aspect = width / height
             camera.current.updateProjectionMatrix()
         }
@@ -105,13 +103,13 @@ const STLCanvas = () => {
         }
         const animate = () => {
             requestAnimationFrame(animate)
-            control.update()
-            control.enableZoom = true
+            orbitControls.current.update()
+            orbitControls.current.enableZoom = true
             render()
         }
 
         const render = () => {
-            renderer.render(scene.current, camera.current)
+            renderer.current.render(scene.current, camera.current)
         }
 
         init()
@@ -120,7 +118,7 @@ const STLCanvas = () => {
         animate()
         setCanvasLoaded(true)
 
-    }, [defaultCameraPosition, sceneNames, canvasLoaded, camera, scene])
+    }, [defaultCameraPosition, sceneNames, canvasLoaded, camera, scene, renderer, orbitControls])
 
     //Remove event listener when component unmount
     useEffect(() => {
@@ -128,9 +126,6 @@ const STLCanvas = () => {
             window.removeEventListener('resize', handleSize.current, false)
         }
     }, [])
-
-
-    
 
     const removeModel = () => {
         const mesh = scene.current.getObjectByName(sceneNames.stlModel)
@@ -141,15 +136,13 @@ const STLCanvas = () => {
         canvas.style.visibility = 'hidden'
     }
 
-
     return (
         <>
             <div className={classes.stlCanvasWrapper} >
                 {
                     (!modelLoaded) &&
-                    <UploadSTL modelLoaded={modelLoaded} setModelLoaded={setModelLoaded}></UploadSTL>
+                    <UploadSTL setModelLoaded={setModelLoaded}></UploadSTL>
                 }
-                
 
                 <div className={classes.stlCanvas} ref={mount} id="stlCanvas"></div>
 

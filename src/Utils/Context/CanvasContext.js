@@ -6,6 +6,8 @@ export const CanvasContext = React.createContext()
 const CanvasProvider = ({ children }) => {
     const scene = useRef(null)
     const camera = useRef(null)
+    const renderer = useRef(null)
+    const orbitControls = useRef(null)
     const defaultCameraPosition = useRef(new THREE.Vector3(0, 0, 100))
 
     const sceneNames = useRef({
@@ -20,8 +22,10 @@ const CanvasProvider = ({ children }) => {
         <CanvasContext.Provider value={{
             scene: scene,
             camera: camera,
+            renderer: renderer,
             defaultCameraPosition: defaultCameraPosition,
-            sceneNames: sceneNames
+            sceneNames: sceneNames,
+            orbitControls: orbitControls
         }}>
             {children}
         </CanvasContext.Provider>
