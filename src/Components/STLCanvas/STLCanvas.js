@@ -2,19 +2,16 @@
 import React, { useRef, useEffect, useState, useContext } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
-import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
-
-import { Typography, Button, Box, Input, Grid } from '@material-ui/core'
-import ErrorAlert from '../ErrorAlert/ErrorAlert'
+import { Button, Grid } from '@material-ui/core'
 import useStyles from './STLCanvasStyle'
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import { CanvasContext } from '../../Utils/Context/CanvasContext'
 import OrientationButton from '../OrientationButton/OrientationButton'
 import WireframeSwitch from '../WireframeSwitch/WireframeSwitch'
 import GenerateSupporButton from '../GenerateSupportButton/GenerateSupportButton'
+import UploadSTL from '../UploadSTL/UploadSTL'
 const STLCanvas = () => {
 
-    const { scene, camera, defaultCameraPosition } = useContext(CanvasContext)
+    const { scene, camera, renderer, defaultCameraPosition , orbitControls} = useContext(CanvasContext)
 
     const mount = useRef(null)
 
@@ -24,10 +21,6 @@ const STLCanvas = () => {
     //States
     const [canvasLoaded, setCanvasLoaded] = useState(false)
     const [modelLoaded, setModelLoaded] = useState(false)
-    const [uploadSuccess, setUploadSuccess] = useState(true)
-    const [errorMessage, setErrorMessage] = useState(null)
-    const [fileName, setfileName] = useState(null)
-
     const sceneNames = {
         mainPlane: "mainPlane",
         gridFloor: "gridFloor",
@@ -46,16 +39,13 @@ const STLCanvas = () => {
 
         let width = mount.current.clientWidth
         let height = mount.current.clientHeight
-        let renderer, control
-
         const init = () => {
             scene.current = new THREE.Scene()
             camera.current = new THREE.PerspectiveCamera(85, width / height, 0.1, 1000)
-            renderer = new THREE.WebGLRenderer({ antialias: true })
-            control = new OrbitControls(camera.current, renderer.domElement)
-
-            renderer.setSize(width, height)
-            renderer.shadowMap.enabled = true
+            renderer.current = new THREE.WebGLRenderer({ antialias: true })
+            orbitControls.current = new OrbitControls(camera.current, renderer.current.domElement)
+            renderer.current.setSize(width, height)
+            renderer.current.shadowMap.enabled = true
 
             scene.current.background = new THREE.Color(0x72645b)
 
@@ -63,9 +53,9 @@ const STLCanvas = () => {
             camera.current.position.set(defaultCameraPosition.current.x, defaultCameraPosition.current.y, defaultCameraPosition.current.z)
 
             createPlane()
-            mount.current.appendChild(renderer.domElement)
+            mount.current.appendChild(renderer.current.domElement)
 
-            control.addEventListener('change', updateLight)
+            orbitControls.current.addEventListener('change', updateLight)
             window.addEventListener('resize', handleResize, false)
         }
 
@@ -99,7 +89,7 @@ const STLCanvas = () => {
         const handleResize = () => {
             width = mount.current.clientWidth
             height = mount.current.clientHeight
-            renderer.setSize(width, height)
+            renderer.current.setSize(width, height)
             camera.current.aspect = width / height
             camera.current.updateProjectionMatrix()
         }
@@ -112,13 +102,13 @@ const STLCanvas = () => {
         }
         const animate = () => {
             requestAnimationFrame(animate)
-            control.update()
-            control.enableZoom = true
+            orbitControls.current.update()
+            orbitControls.current.enableZoom = true
             render()
         }
 
         const render = () => {
-            renderer.render(scene.current, camera.current)
+            renderer.current.render(scene.current, camera.current)
         }
 
         init()
@@ -127,7 +117,7 @@ const STLCanvas = () => {
         animate()
         setCanvasLoaded(true)
 
-    }, [defaultCameraPosition, sceneNames, canvasLoaded, camera, scene])
+    }, [defaultCameraPosition, sceneNames, canvasLoaded, camera, scene, renderer, orbitControls])
 
     //Remove event listener when component unmount
     useEffect(() => {
@@ -136,115 +126,22 @@ const STLCanvas = () => {
         }
     }, [])
 
-    const loadSTL = (event) => {
-        event.preventDefault()
-        try {
-            const file = event.target.file.files[0]
-
-            if (file === undefined) {
-                throw new Error("No file found")
-            }
-
-            if (file.name.split('.').pop().toUpperCase() !== "STL") {
-                throw new Error("File type is not supported")
-            }
-
-            const loader = new STLLoader()
-            const reader = new FileReader()
-
-            reader.readAsDataURL(event.target.file.files[0])
-            reader.onload = (event) => {
-                loader.load(event.target.result, geometry => {
-                    const material = new THREE.MeshPhongMaterial({ color: 0xff00ff })
-                    const mesh = new THREE.Mesh(geometry, material)
-
-                    // Rotate to flat plane
-                    mesh.rotation.x = - Math.PI / 2
-                    mesh.scale.set(0.5, 0.5, 0.5)
-                    mesh.receiveShadow = true
-                    mesh.castShadow = true
-
-                    mesh.geometry.computeBoundingBox()
-                    mesh.geometry.center()
-                    mesh.geometry.computeBoundingSphere()
-
-                    camera.current.position.z = mesh.geometry.boundingSphere.radius
-                    defaultCameraPosition.current.set(defaultCameraPosition.current.x, defaultCameraPosition.current.y, camera.current.position.z)
-                    mesh.position.y += -mesh.geometry.boundingBox.min.z * 0.5
-                    mesh.name = sceneNames.stlModel
-                    scene.current.add(mesh)
-                    //threeDView()
-
-                    camera.current.position.x = Math.sin(-Math.PI / 4) * defaultCameraPosition.current.z
-                    camera.current.position.z = Math.cos(-Math.PI / 4) * defaultCameraPosition.current.z
-                    camera.current.position.y = defaultCameraPosition.current.z
-                    const canvas = document.getElementById('stlCanvas')
-
-                    canvas.style.visibility = 'visible'
-                    setModelLoaded(true)
-                    setUploadSuccess(true)
-                })
-            }
-        } catch (error) {
-            setErrorMessage(error.message)
-            setUploadSuccess(false)
-        }
-    }
-
     const removeModel = () => {
         const mesh = scene.current.getObjectByName(sceneNames.stlModel)
         scene.current.remove(mesh)
 
         setModelLoaded(false)
-        setfileName(null)
         const canvas = document.getElementById('stlCanvas')
         canvas.style.visibility = 'hidden'
-    }
-
-    const getFileName = () => {
-        setfileName(document.getElementById('file').value.split(/(\\|\/)/g).pop())
     }
 
     return (
         <>
             <div className={classes.stlCanvasWrapper} >
-                <Box>
-                    {
-                        (!modelLoaded) &&
-                        <form onSubmit={loadSTL}>
-                            <Input className={classes.Input} type="file" id="file" name="file" inputProps={{ accept: ".stl" }} onChange={getFileName} >
-                            </Input>
-                            <label htmlFor="file">
-                                <Box className={classes.uploadContainer}>
-                                    <Typography variant="h5" >
-                                        {
-                                            (fileName ? fileName : "+ Select a STL file")
-                                        }
-                                    </Typography>
-                                </Box>
-                            </label>
-                            <br />
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                className={classes.uploadBtn}
-                                endIcon={<CloudUploadIcon />}
-                                type="submit"
-                            >
-                                <Typography>
-                                    Load File
-                                </Typography>
-                            </Button>
-                        </form>
-                    }
-                    {
-                        (!uploadSuccess) &&
-                        <div className={classes.errorMessage}>
-                            <ErrorAlert message={errorMessage}></ErrorAlert>
-                        </div>
-
-                    }
-                </Box>
+                {
+                    (!modelLoaded) &&
+                    <UploadSTL setModelLoaded={setModelLoaded}></UploadSTL>
+                }
 
                 <div className={classes.stlCanvas} ref={mount} id="stlCanvas"></div>
 
