@@ -11,16 +11,13 @@ const WireframeSwitch = () => {
     const { scene, sceneNames } = useContext(CanvasContext)
 
     useEffect(() => {
-
         return () => {
             // eslint-disable-next-line 
             const wireframe = scene.current.getObjectByName(sceneNames.current.wireFrame)
             // eslint-disable-next-line
             scene.current.remove(wireframe)
         }
-
     }, [scene, sceneNames])
-
 
     const toggleWireFrame = () => {
         if (!enableWireFrame) {
@@ -28,26 +25,24 @@ const WireframeSwitch = () => {
                 const mesh = scene.current.getObjectByName(sceneNames.current.stlModel)
 
                 const geo = new THREE.WireframeGeometry(mesh.geometry)
-
                 const mat = new THREE.MeshPhongMaterial({ color: 0xff00ff })
 
                 const wireframe = new THREE.LineSegments(geo, mat)
-                wireframe.name = sceneNames.current.wireFrame
-                wireframe.rotation.x = - Math.PI / 2
-                wireframe.scale.set(0.5, 0.5, 0.5)
-                wireframe.position.y += -mesh.geometry.boundingBox.min.z / 2
+                wireframe.name = "wireframe"
+                mesh.add(wireframe)
 
-                scene.current.add(wireframe)
-
+                wireframe.rotation.x = 2 * Math.PI
                 setEnableWireFrame(true)
             }
             enableWireFrame()
         } else {
-            const wireframe = scene.current.getObjectByName(sceneNames.current.wireFrame)
-            scene.current.remove(wireframe)
+            const mesh = scene.current.getObjectByName(sceneNames.current.stlModel)
+            const wireframe = mesh.getObjectByName("wireframe")
+            mesh.remove(wireframe)
             setEnableWireFrame(false)
         }
     }
+
     return (
         <>
             <Typography className={classes.wireframe}>Wireframe</Typography>
