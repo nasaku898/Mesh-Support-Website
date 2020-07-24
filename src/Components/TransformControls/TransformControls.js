@@ -9,13 +9,17 @@ import RemoveIcon from '@material-ui/icons/Remove'
 const TransformControls = () => {
     const [enableManipulation, setEnableManipulation] = useState(false)
     const { scene, camera, renderer, sceneNames, orbitControls } = useContext(CanvasContext)
-
+    const [meshOriginalPosition, setMeshOriginalPosition] = useState()
+    const [meshOriginalRotation, setMeshOriginalRotation] = useState()
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
 
     const toggleManipulation = () => {
         if (!enableManipulation) {
             const mesh = scene.current.getObjectByName(sceneNames.current.stlModel)
+            setMeshOriginalPosition({ x: mesh.position.x, y: mesh.position.y, z: mesh.position.z })
+            setMeshOriginalRotation({ x: mesh.rotation.x, y: mesh.rotation.y, z: mesh.rotation.z })
+
             const transformControls = new TransformManipulation(camera.current, renderer.current.domElement)
 
             transformControls.addEventListener('dragging-changed', (event) => { orbitControls.current.enabled = !event.value })
@@ -77,6 +81,12 @@ const TransformControls = () => {
         const transformControls = scene.current.getObjectByName(sceneNames.current.transformControls)
         transformControls.setSize(Math.max(transformControls.size - 0.1, 0.1))
     }
+
+    const handleReset = () => {
+        const mesh = scene.current.getObjectByName(sceneNames.current.stlModel)
+        mesh.position.set(meshOriginalPosition.x, meshOriginalPosition.y, meshOriginalPosition.z)
+        mesh.rotation.set(meshOriginalRotation.x, meshOriginalRotation.y, meshOriginalRotation.z)
+    }
     
     return (
         <>
@@ -128,6 +138,9 @@ const TransformControls = () => {
                         <Button onClick={handleIncrease}><AddIcon /></Button>
                         <Button onClick={handleDecrease}><RemoveIcon /></Button>
                     </ButtonGroup>
+                </MenuItem>
+                <MenuItem onClick={handleReset}>
+                    Reset
                 </MenuItem>
             </Menu>
         </>
