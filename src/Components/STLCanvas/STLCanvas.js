@@ -9,9 +9,11 @@ import OrientationButton from '../OrientationButton/OrientationButton'
 import WireframeSwitch from '../WireframeSwitch/WireframeSwitch'
 import GenerateSupporButton from '../GenerateSupportButton/GenerateSupportButton'
 import UploadSTL from '../UploadSTL/UploadSTL'
+import TransformControls from '../TransformControls/TransformControls'
+
 const STLCanvas = () => {
 
-    const { scene, camera, renderer, defaultCameraPosition , orbitControls} = useContext(CanvasContext)
+    const { scene, camera, renderer, defaultCameraPosition, orbitControls } = useContext(CanvasContext)
 
     const mount = useRef(null)
 
@@ -149,29 +151,38 @@ const STLCanvas = () => {
                     (modelLoaded) &&
                     <>
                         <Grid container spacing={0} className={classes.gridContainer}>
-                            <Grid item xs={12} md={8} >
+                            <Grid item xs={12} md={4} >
                                 <div className={classes.menuItem}>
                                     <OrientationButton></OrientationButton>
                                 </div>
-
+                            </Grid>
+                            <Grid item xs={12} md={4}>
+                                <div className={classes.menuItem}>
+                                    <TransformControls></TransformControls>
+                                </div>
                             </Grid>
                             <Grid item xs={12} md={2}>
                                 <div className={classes.menuItem}>
                                     <WireframeSwitch></WireframeSwitch>
                                 </div>
                             </Grid>
-                            <Grid item xs={12} md={2} className={classes.menuItem}>
-                                <Button
-                                    onClick={removeModel}
-                                    variant="contained"
-                                    color="primary"
-                                    className={classes.removeBtn} >
-                                    Remove Model
-                                    </Button>
+                            <Grid item xs={12} md={2} >
+                                <div className={classes.menuItem}>
+                                    <Button
+                                        onClick={removeModel}
+                                        variant="contained"
+                                        color="primary"
+                                        fullWidth
+                                    >
+                                        Remove Model
+                                </Button>
+                                </div>
+
                             </Grid>
                             <Grid item xs={12} >
                                 <GenerateSupporButton></GenerateSupporButton>
                             </Grid>
+
                         </Grid>
                     </>
                 }

@@ -6,11 +6,10 @@ import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
 import * as THREE from 'three'
 import { CanvasContext } from '../../Utils/Context/CanvasContext'
 import useStyles from './UploadSTLStyle'
-import { CreateTransformControls } from '../../Utils/Functions/TransformControls'
-import { DragControls } from 'three/examples/jsm/controls/DragControls'
+
 
 const UploadSTL = (props) => {
-    const { scene, camera, renderer, defaultCameraPosition, sceneNames, orbitControls } = useContext(CanvasContext)
+    const { scene, camera, defaultCameraPosition, sceneNames } = useContext(CanvasContext)
 
     const [uploadSuccess, setUploadSuccess] = useState(true)
     const [errorMessage, setErrorMessage] = useState(null)
@@ -49,7 +48,6 @@ const UploadSTL = (props) => {
                     mesh.scale.set(0.5, 0.5, 0.5)
                     mesh.receiveShadow = true
                     mesh.castShadow = true
-
                     mesh.geometry.computeBoundingBox()
                     mesh.geometry.center()
                     mesh.geometry.computeBoundingSphere()
@@ -60,15 +58,7 @@ const UploadSTL = (props) => {
                     mesh.position.y += -mesh.geometry.boundingBox.min.z * 0.5
                     mesh.name = sceneNames.current.stlModel
                     scene.current.add(mesh)
-                    //orbitControls.current.target = mesh.position
-                    CreateTransformControls(mesh, camera.current, renderer.current, orbitControls.current, scene.current)
-                    /*
-                    let objects = [mesh]
-                    let dragControls = new DragControls(objects, camera.current, renderer.current.domElement)
-                    dragControls.addEventListener('dragstart', function () { orbitControls.current.enabled = false; });
-                    dragControls.addEventListener('drag', onDragEvent);
-                    dragControls.addEventListener('dragend', function () { orbitControls.current.enabled = true; });
-                    */
+
                     camera.current.position.x = Math.sin(-Math.PI / 4) * defaultCameraPosition.current.z
                     camera.current.position.z = Math.cos(-Math.PI / 4) * defaultCameraPosition.current.z
                     camera.current.position.y = defaultCameraPosition.current.z
@@ -83,10 +73,6 @@ const UploadSTL = (props) => {
             setErrorMessage(error.message)
             setUploadSuccess(false)
         }
-    }
-
-    const onDragEvent = (event) => {
-        event.object.position.y = -event.object.geometry.boundingBox.min.z * 0.5
     }
 
     return (
@@ -114,7 +100,7 @@ const UploadSTL = (props) => {
                     >
                         <Typography>
                             Load File
-                                </Typography>
+                        </Typography>
                     </Button>
                 </form>
             }
