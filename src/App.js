@@ -5,6 +5,7 @@ import NavBar from "./Components/NavBar/NavBar"
 import Home from './Pages/Home/Home';
 import Footer from './Components/Footer/Footer';
 import SupportGenerator from './Pages/SupportGenerator/SupportGenerator';
+import FileConverter from './Pages/FileConverter/FileConverter';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Switch>
           <Route exact path="/" component={Home} />
           <Route exact path="/supportGeneration" component={SupportGenerator}/>
+          <Route exact path="/fileConverter" component={FileConverter}/>
         </Switch>
         <Footer />
       </Router>

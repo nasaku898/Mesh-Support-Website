@@ -8,46 +8,47 @@ const WireframeSwitch = () => {
     const [enableWireFrame, setEnableWireFrame] = useState(false)
     const classes = useStyles()
 
-    const { scene, sceneNames } = useContext(CanvasContext)
+    const { scene, sceneNames, listOfMesh } = useContext(CanvasContext)
+
+
 
     useEffect(() => {
-
         return () => {
             // eslint-disable-next-line 
             const wireframe = scene.current.getObjectByName(sceneNames.current.wireFrame)
             // eslint-disable-next-line
             scene.current.remove(wireframe)
         }
-
     }, [scene, sceneNames])
-
 
     const toggleWireFrame = () => {
         if (!enableWireFrame) {
             const enableWireFrame = () => {
-                const mesh = scene.current.getObjectByName(sceneNames.current.stlModel)
+                for (let meshIndex = 0; meshIndex < listOfMesh.length; meshIndex++) {
+                    const mesh = listOfMesh[meshIndex]
+                    const geo = new THREE.WireframeGeometry(mesh.geometry)
+                    const mat = new THREE.MeshPhongMaterial({ color: 0xff00ff })
 
-                const geo = new THREE.WireframeGeometry(mesh.geometry)
-
-                const mat = new THREE.MeshPhongMaterial({ color: 0xff00ff })
-
-                const wireframe = new THREE.LineSegments(geo, mat)
-                wireframe.name = sceneNames.current.wireFrame
-                wireframe.rotation.x = - Math.PI / 2
-                wireframe.scale.set(0.5, 0.5, 0.5)
-                wireframe.position.y += -mesh.geometry.boundingBox.min.z / 2
-
-                scene.current.add(wireframe)
-
+                    const wireframe = new THREE.LineSegments(geo, mat)
+                    wireframe.name = "wireframe"
+                    mesh.add(wireframe)
+                    wireframe.rotation.x = 2 * Math.PI
+                }
                 setEnableWireFrame(true)
             }
             enableWireFrame()
         } else {
-            const wireframe = scene.current.getObjectByName(sceneNames.current.wireFrame)
-            scene.current.remove(wireframe)
+
+            for (let meshIndex = 0; meshIndex < listOfMesh.length; meshIndex++) {
+                const mesh = listOfMesh[meshIndex]
+                const wireframe = mesh.getObjectByName("wireframe")
+                mesh.remove(wireframe)
+            }
+
             setEnableWireFrame(false)
         }
     }
+
     return (
         <>
             <Typography className={classes.wireframe}>Wireframe</Typography>
