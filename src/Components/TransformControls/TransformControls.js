@@ -141,14 +141,14 @@ const TransformControls = () => {
                 <MenuItem onClick={handleScale}>
                     Scale
                 </MenuItem>
+                <MenuItem onClick={handleReset}>
+                    Reset
+                </MenuItem>
                 <MenuItem>
                     <ButtonGroup size="small" aria-label="small outlined button group">
                         <Button onClick={handleIncrease}><AddIcon /></Button>
                         <Button onClick={handleDecrease}><RemoveIcon /></Button>
                     </ButtonGroup>
-                </MenuItem>
-                <MenuItem onClick={handleReset}>
-                    Reset
                 </MenuItem>
             </Menu>
         </>

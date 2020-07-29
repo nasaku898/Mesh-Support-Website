@@ -28,6 +28,12 @@ const NavBar = () => {
                                 GitHub
                             </Link>
                         </Typography>
+
+                        <Typography className={classes.BoxStyle}>
+                            <Link component={RouterLink} to="/fileConverter" color="inherit">
+                                Convert File
+                            </Link>
+                        </Typography>
                     </div>
 
                     <Link className={classes.link} component={RouterLink} to="/supportGeneration" color="inherit">
