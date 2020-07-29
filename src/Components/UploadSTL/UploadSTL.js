@@ -9,7 +9,7 @@ import useStyles from './UploadSTLStyle'
 
 
 const UploadSTL = (props) => {
-    const { scene, camera, defaultCameraPosition, sceneNames } = useContext(CanvasContext)
+    let { scene, camera, defaultCameraPosition, sceneNames, listOfMesh } = useContext(CanvasContext)
 
     const [uploadSuccess, setUploadSuccess] = useState(true)
     const [errorMessage, setErrorMessage] = useState(null)
@@ -36,8 +36,8 @@ const UploadSTL = (props) => {
 
             const loader = new STLLoader()
             const reader = new FileReader()
-
-            reader.readAsDataURL(event.target.file.files[0])
+            console.log(file)
+            reader.readAsDataURL(file)
             reader.onload = (event) => {
                 loader.load(event.target.result, geometry => {
                     const material = new THREE.MeshPhongMaterial({ color: 0xff00ff })
@@ -57,6 +57,9 @@ const UploadSTL = (props) => {
                     defaultCameraPosition.current.set(defaultCameraPosition.current.x, defaultCameraPosition.current.y, camera.current.position.z)
                     mesh.position.y += -mesh.geometry.boundingBox.min.z * 0.5
                     mesh.name = sceneNames.current.stlModel
+                    mesh.originalPosition = { x: mesh.position.x, y: mesh.position.y, z: mesh.position.z }
+                    mesh.originalRotation = { x: mesh.rotation.x, y: mesh.rotation.y, z: mesh.rotation.z }
+                    listOfMesh.push(mesh)
                     scene.current.add(mesh)
 
                     camera.current.position.x = Math.sin(-Math.PI / 4) * defaultCameraPosition.current.z
@@ -81,15 +84,19 @@ const UploadSTL = (props) => {
                 <form onSubmit={loadSTL}>
                     <Input className={classes.Input} type="file" id="file" name="file" inputProps={{ accept: ".stl" }} onChange={getFileName} >
                     </Input>
-                    <label htmlFor="file">
-                        <Box className={classes.uploadContainer}>
+
+                    <Box className={classes.uploadContainer}>
+                        <label htmlFor="file">
+
                             <Typography variant="h5" >
                                 {
                                     (fileName ? fileName : "+ Select a STL file")
                                 }
                             </Typography>
-                        </Box>
-                    </label>
+
+                        </label>
+                    </Box>
+
                     <br />
                     <Button
                         variant="contained"

@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect, useRef } from 'react'
 import { Switch, IconButton, Typography, MenuItem, Menu, ButtonGroup, Button } from '@material-ui/core'
 import { CanvasContext } from '../../Utils/Context/CanvasContext'
 import { TransformControls as TransformManipulation } from 'three/examples/jsm/controls/TransformControls'
@@ -8,27 +8,24 @@ import RemoveIcon from '@material-ui/icons/Remove'
 
 const TransformControls = () => {
     const [enableManipulation, setEnableManipulation] = useState(false)
-    const { scene, camera, renderer, sceneNames, orbitControls } = useContext(CanvasContext)
-    const [meshOriginalPosition, setMeshOriginalPosition] = useState()
-    const [meshOriginalRotation, setMeshOriginalRotation] = useState()
+    const { scene, camera, renderer, orbitControls, listOfMesh } = useContext(CanvasContext)
+
+    const listOfControls = useRef([])
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
 
     const toggleManipulation = () => {
         if (!enableManipulation) {
-            const mesh = scene.current.getObjectByName(sceneNames.current.stlModel)
-            setMeshOriginalPosition({ x: mesh.position.x, y: mesh.position.y, z: mesh.position.z })
-            setMeshOriginalRotation({ x: mesh.rotation.x, y: mesh.rotation.y, z: mesh.rotation.z })
 
-            const transformControls = new TransformManipulation(camera.current, renderer.current.domElement)
+            for (let meshIndex = 0; meshIndex < listOfMesh.length; meshIndex++) {
+                let mesh = listOfMesh[meshIndex]
+                const transformControls = new TransformManipulation(camera.current, renderer.current.domElement)
+                transformControls.addEventListener('dragging-changed', (event) => { orbitControls.current.enabled = !event.value })
+                transformControls.attach(mesh)
 
-            transformControls.addEventListener('dragging-changed', (event) => { orbitControls.current.enabled = !event.value })
-            transformControls.attach(mesh)
-
-            sceneNames.current.transformControls = "transformControls"
-            transformControls.name = sceneNames.current.transformControls
-
-            scene.current.add(transformControls)
+                scene.current.add(transformControls)
+                listOfControls.current.push(transformControls)
+            }
             setEnableManipulation(true)
         } else {
             removeTransformControls()
@@ -44,8 +41,9 @@ const TransformControls = () => {
     }, [])
 
     const removeTransformControls = () => {
-        const transformControls = scene.current.getObjectByName(sceneNames.current.transformControls)
-        scene.current.remove(transformControls)
+        for (let controlIndex = 0; controlIndex < listOfControls.current.length; controlIndex++) {
+            scene.current.remove(listOfControls.current[controlIndex])
+        }
         setEnableManipulation(false)
     }
 
@@ -58,36 +56,46 @@ const TransformControls = () => {
     };
 
     const handleTranslation = () => {
-        const transformControls = scene.current.getObjectByName(sceneNames.current.transformControls)
-        transformControls.setMode("translate")
+        for (let controlIndex = 0; controlIndex < listOfControls.current.length; controlIndex++) {
+            listOfControls.current[controlIndex].setMode("translate")
+        }
     }
 
     const handleRotation = () => {
-        const transformControls = scene.current.getObjectByName(sceneNames.current.transformControls)
-        transformControls.setMode("rotate")
+        for (let controlIndex = 0; controlIndex < listOfControls.current.length; controlIndex++) {
+            listOfControls.current[controlIndex].setMode("rotate")
+        }
     }
 
     const handleScale = () => {
-        const transformControls = scene.current.getObjectByName(sceneNames.current.transformControls)
-        transformControls.setMode("scale")
+        for (let controlIndex = 0; controlIndex < listOfControls.current.length; controlIndex++) {
+            listOfControls.current[controlIndex].setMode("scale")
+        }
     }
 
     const handleIncrease = () => {
-        const transformControls = scene.current.getObjectByName(sceneNames.current.transformControls)
-        transformControls.setSize(transformControls.size + 0.1)
+        for (let controlIndex = 0; controlIndex < listOfControls.current.length; controlIndex++) {
+            const transformControls = listOfControls.current[controlIndex]
+            transformControls.setSize(transformControls.size + 0.1)
+        }
     }
 
     const handleDecrease = () => {
-        const transformControls = scene.current.getObjectByName(sceneNames.current.transformControls)
-        transformControls.setSize(Math.max(transformControls.size - 0.1, 0.1))
+        for (let controlIndex = 0; controlIndex < listOfControls.current.length; controlIndex++) {
+            const transformControls = listOfControls.current[controlIndex]
+            transformControls.setSize(Math.max(transformControls.size - 0.1, 0.1))
+        }
     }
 
     const handleReset = () => {
-        const mesh = scene.current.getObjectByName(sceneNames.current.stlModel)
-        mesh.position.set(meshOriginalPosition.x, meshOriginalPosition.y, meshOriginalPosition.z)
-        mesh.rotation.set(meshOriginalRotation.x, meshOriginalRotation.y, meshOriginalRotation.z)
+        for (let meshIndex = 0; meshIndex < listOfMesh.length; meshIndex++) {
+            const mesh = listOfMesh[meshIndex]
+            mesh.position.set(mesh.originalPosition.x, mesh.originalPosition.y, mesh.originalPosition.z)
+            mesh.rotation.set(mesh.originalRotation.x, mesh.originalRotation.y, mesh.originalRotation.z)
+
+        }
     }
-    
+
     return (
         <>
             <Typography> Manipulation</Typography>
