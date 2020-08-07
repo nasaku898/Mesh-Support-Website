@@ -1,4 +1,25 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This web app is a user interface for a support structure generator for 3D printing model in stl format.
+It provides a simple canvas to preview and edit a 3D model before generating the support.
+
+## Implementation
+The project is implemented with React JS and Material UI for the user interface. The canvas is implemented with Three.js, a cross-browser JavaScript library and application programming interface used to create and display animated 3D computer graphics in a web browser.
+
+## Features
+* Load and preview stl model in the browser
+* Grid plane (in mm)
+* Translate, Rotate and Scale model
+* Wireframe
+* Add multiple models at a time
+* Convert stl file into obj and vice-versa
+
+## To Contribute
+The app is simply a react application. Therefore, to contribute to the app
+* clone the repo
+* go to the root of the project in your terminal (there should be a package.json)
+* write the command "npm install", it will install all the dependencies
+* npm start to start the application
+
+**Note that node js is require to develop this app**
 
 ## Available Scripts
 
@@ -37,32 +58,5 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+### License
+**Project made by DAMLab at Concordia University. All right reserved**
