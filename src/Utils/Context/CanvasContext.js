@@ -9,7 +9,6 @@ const CanvasProvider = ({ children }) => {
     const renderer = useRef(null)
     const orbitControls = useRef(null)
     const defaultCameraPosition = useRef(new THREE.Vector3(0, 0, 100))
-    const test = {}
     
     const sceneNames = useRef({
         mainPlane: "mainPlane",
@@ -29,9 +28,7 @@ const CanvasProvider = ({ children }) => {
             defaultCameraPosition: defaultCameraPosition,
             sceneNames: sceneNames,
             orbitControls: orbitControls,
-            test: test,
             listOfMesh:listOfMesh
-            
         }}>
             {children}
         </CanvasContext.Provider>
