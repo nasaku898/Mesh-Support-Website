@@ -9,7 +9,7 @@ import useStyles from './UploadSTLStyle'
 
 
 const UploadSTL = (props) => {
-    let { scene, camera, defaultCameraPosition, sceneNames, listOfMesh } = useContext(CanvasContext)
+    let { scene, camera, defaultCameraPosition, listOfMesh } = useContext(CanvasContext)
 
     const [uploadSuccess, setUploadSuccess] = useState(true)
     const [errorMessage, setErrorMessage] = useState(null)
@@ -36,13 +36,11 @@ const UploadSTL = (props) => {
 
             const loader = new STLLoader()
             const reader = new FileReader()
-            console.log(file)
             reader.readAsDataURL(file)
             reader.onload = (event) => {
                 loader.load(event.target.result, geometry => {
                     const material = new THREE.MeshPhongMaterial({ color: 0xff00ff })
                     const mesh = new THREE.Mesh(geometry, material)
-
                     // Rotate to flat plane
                     mesh.rotation.x = - Math.PI / 2
                     mesh.scale.set(0.5, 0.5, 0.5)
@@ -56,7 +54,7 @@ const UploadSTL = (props) => {
                     camera.current.position.z = mesh.geometry.boundingSphere.radius
                     defaultCameraPosition.current.set(defaultCameraPosition.current.x, defaultCameraPosition.current.y, camera.current.position.z)
                     mesh.position.y += -mesh.geometry.boundingBox.min.z * 0.5
-                    mesh.name = sceneNames.current.stlModel
+                    mesh.name = file.name
                     mesh.originalPosition = { x: mesh.position.x, y: mesh.position.y, z: mesh.position.z }
                     mesh.originalRotation = { x: mesh.rotation.x, y: mesh.rotation.y, z: mesh.rotation.z }
                     listOfMesh.push(mesh)
