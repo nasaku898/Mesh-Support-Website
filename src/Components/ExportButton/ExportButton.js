@@ -10,7 +10,8 @@ const ExportButton = () => {
     const exportSTL = () => {
         const exporter = new STLExporter()
         for (let meshIndex = 0; meshIndex < listOfMesh.length; meshIndex++) {
-            const mesh = listOfMesh[meshIndex]
+            const mesh = listOfMesh[meshIndex].clone()
+            mesh.scale.set(1, 1, 1)
             const file = exporter.parse(mesh)
             let blob = new Blob([file], { type: 'text/plain' })
             saveAs(blob, `${mesh.name}`)
