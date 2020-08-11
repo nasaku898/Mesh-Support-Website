@@ -55,8 +55,11 @@ const UploadSTL = (props) => {
                     defaultCameraPosition.current.set(defaultCameraPosition.current.x, defaultCameraPosition.current.y, camera.current.position.z)
                     mesh.position.y += -mesh.geometry.boundingBox.min.z * 0.5
                     mesh.name = file.name
+
                     mesh.originalPosition = { x: mesh.position.x, y: mesh.position.y, z: mesh.position.z }
                     mesh.originalRotation = { x: mesh.rotation.x, y: mesh.rotation.y, z: mesh.rotation.z }
+                    mesh.originalScale = { x: mesh.scale.x, y: mesh.scale.y, z: mesh.scale.z }
+
                     listOfMesh.push(mesh)
                     scene.current.add(mesh)
 

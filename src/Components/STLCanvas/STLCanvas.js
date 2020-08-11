@@ -68,7 +68,7 @@ const STLCanvas = () => {
 
         const createGridFloor = () => {
             const size = planeSize
-            const divisions = planeSize
+            const divisions = planeSize*2
             const gridHelper = new THREE.GridHelper(size, divisions)
             gridHelper.name = sceneNames.current.gridFloor
             scene.current.add(gridHelper)

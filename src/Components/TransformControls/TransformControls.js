@@ -92,7 +92,16 @@ const TransformControls = () => {
             const mesh = listOfMesh[meshIndex]
             mesh.position.set(mesh.originalPosition.x, mesh.originalPosition.y, mesh.originalPosition.z)
             mesh.rotation.set(mesh.originalRotation.x, mesh.originalRotation.y, mesh.originalRotation.z)
+            mesh.scale.set(mesh.originalScale.x, mesh.originalScale.y, mesh.originalScale.z)
+        }
+    }
 
+    const handleApply = () => {
+        for (let meshIndex = 0; meshIndex < listOfMesh.length; meshIndex++) {
+            const mesh = listOfMesh[meshIndex]
+            mesh.originalPosition = { x: mesh.position.x, y: mesh.position.y, z: mesh.position.z }
+            mesh.originalRotation = { x: mesh.rotation.x, y: mesh.rotation.y, z: mesh.rotation.z }
+            mesh.originalScale = { x: mesh.scale.x, y: mesh.scale.y, z: mesh.scale.z }
         }
     }
 
@@ -132,16 +141,19 @@ const TransformControls = () => {
                 }}
             >
 
-                <MenuItem onClick={handleTranslation}>
+                <MenuItem onClick={() => { handleTranslation(); handleClose(); }}>
                     Translate
                 </MenuItem>
-                <MenuItem onClick={handleRotation}>
+                <MenuItem onClick={() => { handleRotation(); handleClose(); }}>
                     Rotation
                 </MenuItem>
-                <MenuItem onClick={handleScale}>
+                <MenuItem onClick={() => { handleScale(); handleClose(); }}>
                     Scale
                 </MenuItem>
-                <MenuItem onClick={handleReset}>
+                <MenuItem onClick={() => { handleApply(); handleClose(); }}>
+                    Apply
+                </MenuItem>
+                <MenuItem onClick={() => { handleReset(); handleClose(); }}>
                     Reset
                 </MenuItem>
                 <MenuItem>
