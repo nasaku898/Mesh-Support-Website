@@ -1,19 +1,20 @@
 
-import React, { useRef, useEffect, useState, useContext } from 'react'
+import { Button, Grid, Typography } from '@material-ui/core'
+import AddIcon from '@material-ui/icons/Add'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
-import { Button, Grid, Typography } from '@material-ui/core'
-import useStyles from './STLCanvasStyle'
 import { CanvasContext } from '../../Utils/Context/CanvasContext'
-import OrientationButton from '../OrientationButton/OrientationButton'
-import WireframeSwitch from '../WireframeSwitch/WireframeSwitch'
+import ExportButton from '../ExportButton/ExportButton'
 import GenerateSupporButton from '../GenerateSupportButton/GenerateSupportButton'
-import UploadSTL from '../UploadSTL/UploadSTL'
+import OrientationButton from '../OrientationButton/OrientationButton'
 import TransformControls from '../TransformControls/TransformControls'
-import AddIcon from '@material-ui/icons/Add'
+import UploadSTL from '../UploadSTL/UploadSTL'
+import WireframeSwitch from '../WireframeSwitch/WireframeSwitch'
+import useStyles from './STLCanvasStyle'
 const STLCanvas = () => {
 
-    const { scene, camera, renderer, defaultCameraPosition, orbitControls, sceneNames } = useContext(CanvasContext)
+    const { scene, camera, renderer, defaultCameraPosition, orbitControls, sceneNames, listOfMesh } = useContext(CanvasContext)
 
     const mount = useRef(null)
 
@@ -122,12 +123,12 @@ const STLCanvas = () => {
     }, [])
 
     const removeModel = () => {
-        const mesh = scene.current.getObjectByName(sceneNames.current.stlModel)
-        scene.current.remove(mesh)
-
+        for (let meshIndex = 0; meshIndex < listOfMesh.length; meshIndex++) {
+            scene.current.remove(listOfMesh[meshIndex])
+        }
         hideCanvas()
     }
-    const hideCanvas = () =>{
+    const hideCanvas = () => {
         setModelLoaded(false)
         const canvas = document.getElementById('stlCanvas')
         canvas.style.visibility = 'hidden'
@@ -139,19 +140,19 @@ const STLCanvas = () => {
                     (!modelLoaded) &&
                     <UploadSTL setModelLoaded={setModelLoaded}></UploadSTL>
                 }
-                
+
                 <div className={classes.stlCanvas} ref={mount} id="stlCanvas"></div>
 
                 {
                     (modelLoaded) &&
                     <>
                         <Grid container spacing={0} className={classes.gridContainer}>
-                            <Grid item xs={12} md={3} >
+                            <Grid item xs={12} md={2} >
                                 <div className={classes.menuItem}>
                                     <OrientationButton></OrientationButton>
                                 </div>
                             </Grid>
-                            <Grid item xs={12} md={3}>
+                            <Grid item xs={12} md={2}>
                                 <div className={classes.menuItem}>
                                     <TransformControls></TransformControls>
                                 </div>
@@ -163,16 +164,20 @@ const STLCanvas = () => {
                             </Grid>
                             <Grid item xs={12} md={2}>
                                 <div className={classes.menuItem}>
-                                    <Button onClick={hideCanvas}><Typography>Add Model</Typography><AddIcon/></Button>
+                                    <Button onClick={hideCanvas}><Typography>Add Model</Typography><AddIcon /></Button>
                                 </div>
-                                
-                                </Grid>
+
+                            </Grid>
+                            <Grid item xs={12} md={2}>
+                                <div className={classes.menuItem}>
+                                    <ExportButton></ExportButton>
+                                </div>
+                            </Grid>
                             <Grid item xs={12} md={2} >
                                 <div className={classes.menuItem}>
                                     <Button
                                         onClick={removeModel}
-                                        variant="contained"
-                                        color="primary"
+                                        
                                         fullWidth
                                     >
                                         Remove Model
@@ -184,7 +189,7 @@ const STLCanvas = () => {
                                 <GenerateSupporButton></GenerateSupporButton>
                             </Grid>
                         </Grid>
-                        
+
                     </>
                 }
             </div>

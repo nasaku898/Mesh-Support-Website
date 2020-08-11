@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { Button, Menu, MenuItem } from '@material-ui/core'
+import { Button, Menu, MenuItem, Typography } from '@material-ui/core'
 import { CanvasContext } from '../../Utils/Context/CanvasContext'
 const OrientationButton = () => {
 
@@ -48,8 +48,8 @@ const OrientationButton = () => {
     };
     return (
         <>
-            <Button variant="contained" color="primary" aria-controls="orientation-menu" aria-haspopup="true" onClick={handleClick}>
-                Select Orientation
+            <Button aria-controls="orientation-menu" aria-haspopup="true" onClick={handleClick} fullWidth>
+                <Typography>Select Orientation</Typography>
             </Button>
             <Menu
                 id="orientation-menu"
@@ -62,7 +62,7 @@ const OrientationButton = () => {
                 <MenuItem onClick={() => { rightSideView(); handleClose(); }}>Right</MenuItem>
                 <MenuItem onClick={() => { topView(); handleClose(); }}>Top</MenuItem>
                 <MenuItem onClick={() => { frontView(); handleClose(); }}>Front</MenuItem>
-                <MenuItem onClick={() => { threeDView();handleClose(); }}>3D</MenuItem>
+                <MenuItem onClick={() => { threeDView(); handleClose(); }}>3D</MenuItem>
             </Menu>
         </>
     )
