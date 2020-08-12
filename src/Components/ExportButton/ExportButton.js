@@ -7,20 +7,19 @@ const ExportButton = () => {
 
     const { listOfMesh } = useContext(CanvasContext)
 
-    const exportSTL = () => {
+    const scaleModel = () => {
         const exporter = new STLExporter()
         for (let meshIndex = 0; meshIndex < listOfMesh.length; meshIndex++) {
-            const mesh = listOfMesh[meshIndex].clone()
-            mesh.scale.set(1, 1, 1)
-            const file = exporter.parse(mesh)
-            let blob = new Blob([file], { type: 'text/plain' })
+            const mesh = listOfMesh[meshIndex]
+            const exportFile = exporter.parse(mesh)
+            let blob = new Blob([exportFile], { type: 'text/plain' })
             saveAs(blob, `${mesh.name}`)
         }
     }
 
     return (
         <>
-            <Button onClick={exportSTL}>Export</Button>
+            <Button onClick={scaleModel}>Export</Button>
         </>
     )
 }
