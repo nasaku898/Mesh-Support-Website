@@ -43,17 +43,16 @@ const UploadSTL = (props) => {
                     const mesh = new THREE.Mesh(geometry, material)
                     // Rotate to flat plane
                     mesh.rotation.x = - Math.PI / 2
-                    mesh.scale.set(0.5, 0.5, 0.5)
                     mesh.receiveShadow = true
                     mesh.castShadow = true
                     mesh.geometry.computeBoundingBox()
                     mesh.geometry.center()
                     mesh.geometry.computeBoundingSphere()
-
+                    
                     //center mesh
-                    camera.current.position.z = mesh.geometry.boundingSphere.radius
+                    camera.current.position.z = mesh.geometry.boundingSphere.radius * 2
                     defaultCameraPosition.current.set(defaultCameraPosition.current.x, defaultCameraPosition.current.y, camera.current.position.z)
-                    mesh.position.y += -mesh.geometry.boundingBox.min.z * 0.5
+                    mesh.position.y += -mesh.geometry.boundingBox.min.z
                     mesh.name = file.name
 
                     mesh.originalPosition = { x: mesh.position.x, y: mesh.position.y, z: mesh.position.z }
