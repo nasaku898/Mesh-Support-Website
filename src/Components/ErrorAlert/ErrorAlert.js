@@ -1,5 +1,5 @@
-import React from 'react'
 import { Alert, AlertTitle } from '@material-ui/lab';
+import React from 'react';
 const ErrorAlert = ({ message }) => {
     return (
         <div>

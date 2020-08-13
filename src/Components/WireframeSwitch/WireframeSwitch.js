@@ -1,8 +1,8 @@
-import React, { useState, useContext, useEffect } from 'react'
-import { Typography, Switch } from '@material-ui/core'
-import useStyles from './WireframeSwitchStyle'
-import { CanvasContext } from '../../Utils/Context/CanvasContext'
+import { Switch, Typography } from '@material-ui/core'
+import React, { useContext, useEffect, useState } from 'react'
 import * as THREE from 'three'
+import { CanvasContext } from '../../Utils/Context/CanvasContext'
+import useStyles from './WireframeSwitchStyle'
 
 const WireframeSwitch = () => {
     const [enableWireFrame, setEnableWireFrame] = useState(false)

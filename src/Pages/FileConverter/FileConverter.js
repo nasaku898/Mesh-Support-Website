@@ -1,14 +1,14 @@
+import { Box, Button, Grid, Input, Typography } from '@material-ui/core'
+import SyncAltIcon from '@material-ui/icons/SyncAlt'
+import { saveAs } from 'file-saver'
 import React, { useState } from 'react'
 import * as THREE from 'three'
 import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
-import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
 import { STLExporter } from 'three/examples/jsm/exporters/STLExporter'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
-import { Input, Button, Typography, Grid, Box } from '@material-ui/core'
-import { saveAs } from 'file-saver'
-import useStyles from './FileConvertStyle'
-import SyncAltIcon from '@material-ui/icons/SyncAlt';
+import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
 import ErrorAlert from '../../Components/ErrorAlert/ErrorAlert'
+import useStyles from './FileConvertStyle'
 const FileConverter = () => {
 
     const classes = useStyles()

@@ -1,11 +1,11 @@
-import React, { useState, useContext } from 'react'
-import { Box, Input, Typography, Button } from '@material-ui/core'
+import { Box, Button, Input, Typography } from '@material-ui/core';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import ErrorAlert from '../ErrorAlert/ErrorAlert'
-import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
-import * as THREE from 'three'
-import { CanvasContext } from '../../Utils/Context/CanvasContext'
-import useStyles from './UploadSTLStyle'
+import React, { useContext, useState } from 'react';
+import * as THREE from 'three';
+import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
+import { CanvasContext } from '../../Utils/Context/CanvasContext';
+import ErrorAlert from '../ErrorAlert/ErrorAlert';
+import useStyles from './UploadSTLStyle';
 
 
 const UploadSTL = (props) => {

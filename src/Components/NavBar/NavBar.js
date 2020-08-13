@@ -1,9 +1,9 @@
-import React from 'react'
-import { AppBar, Toolbar, Typography, Button, Link } from '@material-ui/core';
-import { Home } from '@material-ui/icons'
+import { AppBar, Button, Link, Toolbar, Typography } from '@material-ui/core';
+import { Home } from '@material-ui/icons';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import useStyles from './NavBarStyle'
+import React from 'react';
 import { Link as RouterLink } from "react-router-dom";
+import useStyles from './NavBarStyle';
 const NavBar = () => {
 
     const classes = useStyles()
