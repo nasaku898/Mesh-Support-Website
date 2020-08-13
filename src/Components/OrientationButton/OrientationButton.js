@@ -49,7 +49,7 @@ const OrientationButton = () => {
     return (
         <>
             <Button aria-controls="orientation-menu" aria-haspopup="true" onClick={handleClick} fullWidth>
-                <Typography>Select Orientation</Typography>
+                <Typography style={{ overflow: "hidden" }}>Select Orientation</Typography>
             </Button>
             <Menu
                 id="orientation-menu"

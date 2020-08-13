@@ -126,6 +126,7 @@ const STLCanvas = () => {
         for (let meshIndex = 0; meshIndex < listOfMesh.length; meshIndex++) {
             scene.current.remove(listOfMesh[meshIndex])
         }
+        listOfMesh.splice(0, listOfMesh.length)
         hideCanvas()
     }
     const hideCanvas = () => {
@@ -164,7 +165,7 @@ const STLCanvas = () => {
                             </Grid>
                             <Grid item xs={12} md={2}>
                                 <div className={classes.menuItem}>
-                                    <Button onClick={hideCanvas}><Typography>Add Model</Typography><AddIcon /></Button>
+                                    <Button onClick={hideCanvas} fullWidth><Typography>Add Model</Typography><AddIcon /></Button>
                                 </div>
 
                             </Grid>
