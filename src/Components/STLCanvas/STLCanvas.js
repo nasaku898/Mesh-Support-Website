@@ -126,6 +126,7 @@ const STLCanvas = () => {
         for (let meshIndex = 0; meshIndex < listOfMesh.length; meshIndex++) {
             scene.current.remove(listOfMesh[meshIndex])
         }
+        listOfMesh.splice(0, listOfMesh.length)
         hideCanvas()
     }
     const hideCanvas = () => {

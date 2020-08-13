@@ -7,7 +7,7 @@ const ExportButton = () => {
 
     const { listOfMesh } = useContext(CanvasContext)
 
-    const scaleModel = () => {
+    const exportSTL = () => {
         const exporter = new STLExporter()
         for (let meshIndex = 0; meshIndex < listOfMesh.length; meshIndex++) {
             const mesh = listOfMesh[meshIndex]
@@ -19,7 +19,7 @@ const ExportButton = () => {
 
     return (
         <>
-            <Button onClick={scaleModel}>Export</Button>
+            <Button onClick={exportSTL}>Export</Button>
         </>
     )
 }
