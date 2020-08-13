@@ -39,7 +39,8 @@ const GenerateSupportButton = () => {
 
             const material = new THREE.MeshPhongMaterial({ color: 0xff00ff })
             const mesh = new THREE.Mesh(geometry, material)
-
+            mesh.rotation.x = - Math.PI / 2
+            
             mesh.geometry.computeBoundingBox()
             mesh.geometry.center()
             mesh.geometry.computeBoundingSphere()
@@ -48,7 +49,7 @@ const GenerateSupportButton = () => {
             mesh.name = "support.stl"
             removeModel()
             listOfMesh.push(mesh)
-            console.log(listOfMesh)
+
             scene.current.add(mesh)
         })
     }
