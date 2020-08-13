@@ -1,10 +1,10 @@
-import React, { useState, useContext, useEffect, useRef } from 'react'
-import { Switch, IconButton, Typography, MenuItem, Menu, ButtonGroup, Button } from '@material-ui/core'
-import { CanvasContext } from '../../Utils/Context/CanvasContext'
-import { TransformControls as TransformManipulation } from 'three/examples/jsm/controls/TransformControls'
-import MoreVertIcon from '@material-ui/icons/MoreVert'
+import { Button, ButtonGroup, IconButton, Menu, MenuItem, Switch, Typography } from '@material-ui/core'
 import AddIcon from '@material-ui/icons/Add'
+import MoreVertIcon from '@material-ui/icons/MoreVert'
 import RemoveIcon from '@material-ui/icons/Remove'
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import { TransformControls as TransformManipulation } from 'three/examples/jsm/controls/TransformControls'
+import { CanvasContext } from '../../Utils/Context/CanvasContext'
 
 const TransformControls = () => {
     const [enableManipulation, setEnableManipulation] = useState(false)

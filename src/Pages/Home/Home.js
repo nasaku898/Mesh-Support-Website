@@ -1,8 +1,8 @@
-import React from 'react'
-import { Grid, Box, Typography, Button, Link } from '@material-ui/core'
+import { Box, Button, Grid, Link, Typography } from '@material-ui/core';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import useStyles from './HomeStyle'
+import React from 'react';
 import { Link as RouterLink } from "react-router-dom";
+import useStyles from './HomeStyle';
 const Home = () => {
     const classes = useStyles()
 

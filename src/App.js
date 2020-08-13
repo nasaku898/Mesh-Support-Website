@@ -1,11 +1,11 @@
 import React from 'react';
+import { HashRouter as Router, Route, Switch } from "react-router-dom";
 import './App.css';
-import { HashRouter as Router, Switch, Route } from "react-router-dom";
-import NavBar from "./Components/NavBar/NavBar"
-import Home from './Pages/Home/Home';
 import Footer from './Components/Footer/Footer';
-import SupportGenerator from './Pages/SupportGenerator/SupportGenerator';
+import NavBar from "./Components/NavBar/NavBar";
 import FileConverter from './Pages/FileConverter/FileConverter';
+import Home from './Pages/Home/Home';
+import SupportGenerator from './Pages/SupportGenerator/SupportGenerator';
 
 function App() {
   return (
