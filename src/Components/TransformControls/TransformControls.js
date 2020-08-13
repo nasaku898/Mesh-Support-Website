@@ -107,7 +107,7 @@ const TransformControls = () => {
 
     return (
         <>
-            <Typography> Manipulation</Typography>
+            <Typography style={{ overflow: "hidden" }}> Manipulation</Typography>
             <Switch
                 checked={enableManipulation}
                 onChange={toggleManipulation}

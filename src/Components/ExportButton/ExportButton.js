@@ -19,7 +19,7 @@ const ExportButton = () => {
 
     return (
         <>
-            <Button onClick={exportSTL}>Export</Button>
+            <Button onClick={exportSTL} fullWidth>Export</Button>
         </>
     )
 }
