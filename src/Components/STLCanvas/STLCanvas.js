@@ -19,7 +19,6 @@ const STLCanvas = () => {
     const mount = useRef(null)
 
     const handleSize = useRef(null)
-    const planeSize = 60
 
     //States
     const [canvasLoaded, setCanvasLoaded] = useState(false)
@@ -48,30 +47,10 @@ const STLCanvas = () => {
             camera.current.lookAt(scene.current.position)
             camera.current.position.set(defaultCameraPosition.current.x, defaultCameraPosition.current.y, defaultCameraPosition.current.z)
 
-            createPlane()
             mount.current.appendChild(renderer.current.domElement)
 
             orbitControls.current.addEventListener('change', updateLight)
             window.addEventListener('resize', handleResize, false)
-        }
-
-        const createPlane = () => {
-            var plane = new THREE.Mesh(
-                new THREE.PlaneBufferGeometry(planeSize, planeSize),
-                new THREE.MeshPhongMaterial({ color: 0x999999, specular: 0x101010 })
-            )
-            plane.name = sceneNames.current.mainPlane
-            plane.rotation.x = - Math.PI / 2
-            plane.position.y = - 0.5
-            scene.current.add(plane)
-        }
-
-        const createGridFloor = () => {
-            const size = planeSize
-            const divisions = planeSize
-            const gridHelper = new THREE.GridHelper(size, divisions)
-            gridHelper.name = sceneNames.current.gridFloor
-            scene.current.add(gridHelper)
         }
 
         const addLight = () => {
@@ -109,7 +88,6 @@ const STLCanvas = () => {
 
         init()
         addLight()
-        createGridFloor()
         animate()
         setCanvasLoaded(true)
 
@@ -127,6 +105,9 @@ const STLCanvas = () => {
             scene.current.remove(listOfMesh[meshIndex])
         }
         listOfMesh.splice(0, listOfMesh.length)
+
+        scene.current.remove(scene.current.getObjectByName(sceneNames.current.gridFloor))
+        scene.current.remove(scene.current.getObjectByName(sceneNames.current.mainPlane))
         hideCanvas()
     }
     const hideCanvas = () => {
