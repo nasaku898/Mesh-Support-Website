@@ -9,7 +9,7 @@ import useStyles from './UploadSTLStyle';
 
 
 const UploadSTL = (props) => {
-    let { scene, camera, defaultCameraPosition, listOfMesh } = useContext(CanvasContext)
+    let { scene, camera, defaultCameraPosition, listOfMesh, sceneNames } = useContext(CanvasContext)
 
     const [uploadSuccess, setUploadSuccess] = useState(true)
     const [errorMessage, setErrorMessage] = useState(null)
@@ -61,12 +61,15 @@ const UploadSTL = (props) => {
 
                     listOfMesh.push(mesh)
                     scene.current.add(mesh)
-
+                    console.log(mesh)
                     camera.current.position.x = Math.sin(-Math.PI / 4) * defaultCameraPosition.current.z
                     camera.current.position.z = Math.cos(-Math.PI / 4) * defaultCameraPosition.current.z
                     camera.current.position.y = defaultCameraPosition.current.z
                     const canvas = document.getElementById('stlCanvas')
 
+                    createPlane(mesh.geometry.boundingBox.max.x*3,mesh.geometry.boundingBox.max.y*3)
+                    createGridFloor(mesh.geometry.boundingBox.max.x*3,mesh.geometry.boundingBox.max.y*3)
+                    
                     canvas.style.visibility = 'visible'
                     props.setModelLoaded(true)
                     setUploadSuccess(true)
@@ -76,6 +79,34 @@ const UploadSTL = (props) => {
             setErrorMessage(error.message)
             setUploadSuccess(false)
         }
+    }
+
+    const createGridFloor = (size, division) => {
+        const gridFloor =scene.current.getObjectByName(sceneNames.current.gridFloor)
+        console.log(gridFloor)
+        if(gridFloor !== undefined){
+            gridFloor.geometry.computeBoundingBox()
+            if(gridFloor.geometry.boundingBox.max.x*3 > size){
+                return
+            }else{
+                scene.current.remove(gridFloor)
+            }
+        }
+
+        const gridHelper = new THREE.GridHelper(size, division)
+        gridHelper.name = sceneNames.current.gridFloor
+        scene.current.add(gridHelper)
+    }
+
+    const createPlane = (width,height) => {
+        var plane = new THREE.Mesh(
+            new THREE.PlaneBufferGeometry(width, height),
+            new THREE.MeshPhongMaterial({ color: 0x999999, specular: 0x101010 })
+        )
+        plane.name = sceneNames.current.mainPlane
+        plane.rotation.x = - Math.PI / 2
+        plane.position.y = - 0.5
+        scene.current.add(plane)
     }
 
     return (
